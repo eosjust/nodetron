@@ -22,12 +22,56 @@ router.get('/', function (req, res, next) {
 
 
 router.get('/transfer', function (req, res, next) {
-    var to = req.query.to;
-    var amount = req.query.amount;
-    var pri = req.query.pri;
-    tronWeb.trx.sendTransaction(to,amount,pri).then(resp => {
-        res.send(resp);
+    try {
+        var to = req.query.to;
+        var amount = req.query.amount;
+        var pri = req.query.pri;
+        tronWeb.trx.sendTransaction(to,amount,pri).then(resp => {
+            res.send(resp);
     }).catch((err) => res.send(err));
+    }catch (ex){
+        res.send('{}');
+    }
+});
+
+
+router.get('/interest', function (req, res, next) {
+    try {
+        var pri=req.query.pri;
+        tronWeb.setPrivateKey(pri);
+        tronWeb.contract().at("TE2RzoSV3wFK99w6J9UnnZ4vLfXYoxvRwP").then(resp => {
+            var contract = resp;
+            let param = {
+                feeLimit: 1000000000,
+                callValue: 0
+            };
+            contract.accrueInterest().send(param).then((val) => res.send(val))
+                .catch((err) => res.send(err));
+        });
+    }catch (ex){
+        res.send('error')
+    }
+});
+
+router.get('/lend', function (req, res, next) {
+    try {
+        var from = req.query.from;
+        var amount = req.query.amount;
+        var pri=req.query.pri;
+        tronWeb.setPrivateKey(pri);
+        tronWeb.contract().at("TPgbgZReSnPnJeXPakHcionXzsGk6kVqZB").then(resp => {
+            var contract = resp;
+            let param = {
+                feeLimit: 1000000000,
+                callValue: 23
+            };
+            contract.entrustOrder(amount,3,from).send(param).then((val) => res.send(val))
+                .catch((err) => res.send(err));
+        });
+    }catch (ex){
+        res.send('error')
+    }
+
 });
 
 
