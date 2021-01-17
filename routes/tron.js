@@ -7,10 +7,17 @@ var node_urls=['https://api.trongrid.io'];
 var node_inx=Math.floor(Math.random() * node_urls.length);
 var node_url=node_urls[node_inx];
 
-const tronWeb = new TronWeb(
+const tronWeb1 = new TronWeb(
     node_url,
     node_url,
     node_url,
+    'C9D85EC4858BFBE9BD38A7DDFF1334FDC058F84BC921C96D9B7B060290057631'
+);
+
+const tronWeb2 = new TronWeb(
+    'https://trx.mytokenpocket.vip',
+    'https://trx.mytokenpocket.vip',
+    'https://trx.mytokenpocket.vip',
     'C9D85EC4858BFBE9BD38A7DDFF1334FDC058F84BC921C96D9B7B060290057631'
 );
 
@@ -20,8 +27,18 @@ router.get('/', function (req, res, next) {
     res.send('respond with a resource');
 });
 
+function getTronWeb() {
+    var inx = Math.floor(Math.random() * 10);
+    if(inx<7){
+        return tronWeb1;
+    }else{
+        return tronWeb2;
+    }
+
+}
 
 router.get('/transfer', function (req, res, next) {
+    var tronWeb = getTronWeb();
     try {
         var to = req.query.to;
         var amount = req.query.amount;
@@ -36,6 +53,7 @@ router.get('/transfer', function (req, res, next) {
 
 
 router.get('/interest', function (req, res, next) {
+    var tronWeb = getTronWeb();
     try {
         var pri=req.query.pri;
         tronWeb.setPrivateKey(pri);
@@ -54,6 +72,7 @@ router.get('/interest', function (req, res, next) {
 });
 
 router.get('/lend', function (req, res, next) {
+    var tronWeb = getTronWeb();
     try {
         var from = req.query.from;
         var amount = req.query.amount;
